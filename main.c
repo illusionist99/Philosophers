@@ -36,7 +36,8 @@ void    print_to_screen(size_t id, char *msg) {
 
     pthread_mutex_lock(&print);
     printf("%ld %ld %s\n", no_time(id), id, msg);
-    pthread_mutex_unlock(&print);
+    if (strncmp(msg, "is dead", 7) != 0)
+        pthread_mutex_unlock(&print);
 }
 
 
@@ -73,7 +74,7 @@ void    *routine( void *arg )
 {
     t_book *philo = (t_book *)arg;
 
-    usleep(1000);
+   // usleep(1000);
     while ((philo->n_meals < data->meals) && (philo->flag == 0))
     {
         if (no_time(philo->id) > data->time_to_die) {
@@ -83,11 +84,12 @@ void    *routine( void *arg )
         eat(philo);
         sleeper(philo);
         print_to_screen(philo->id, "is thinking");
-        usleep(1000);
+       // usleep(1000);
     }
     if (philo->flag == 1) {
         print_to_screen(philo->id, "is dead");
         philo->flag++;
+        exit(0);
     }
     
     return arg;
@@ -124,13 +126,13 @@ void    philo_func( char **av )
     pthread_mutex_init(&inc_meal, NULL);
     while (i <= data->n)
     {
-        wise[i].n_meals = 0;
-        wise[i].id = i;
-        wise[i].flag = 0;
-        if (pthread_mutex_init(&(wise[i].myfork), NULL) != 0)
+        wise[i - 1].n_meals = 0;
+        wise[i - 1].id = i;
+        wise[i - 1].flag = 0;
+        if (pthread_mutex_init(&(wise[i - 1].myfork), NULL) != 0)
             return ;
-        wise[i].start = current_timestamp();
-        if (pthread_create(&(wise[i].philo), NULL, routine, &wise[i]) != 0)
+        wise[i - 1].start = current_timestamp();
+        if (pthread_create(&(wise[i - 1].philo), NULL, routine, &wise[i - 1]) != 0)
         {
             printf("Error philo\n");
             return ;
@@ -145,8 +147,8 @@ void    philo_func( char **av )
             return ;
         i++;
     }
-    pthread_mutex_destroy(&inc_meal);
     pthread_mutex_destroy(&print);
+    pthread_mutex_destroy(&inc_meal);
     free(wise);
 }
 
