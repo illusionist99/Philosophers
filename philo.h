@@ -1,5 +1,5 @@
 #ifndef __philo__h__
-# define __pholo_h__
+# define __philo__h__
 
 
 # include <strings.h>
