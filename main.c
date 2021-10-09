@@ -1,88 +1,93 @@
 # include "philo.h"
-# include <strings.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <unistd.h>
-# include <pthread.h>
 
 // start at 1 
-typedef struct s_philo {
 
-    size_t n;
-    size_t time_to_die;
-    size_t time_to_eat;
-    size_t time_to_sleep;
-    size_t meals;
 
-}   t_philo;
 
-t_philo     *data;
-pthread_t *philo;
-pthread_mutex_t *forkk;
+// eat
+// sleep 
+// think
 
-void    eat( int id ) {
+void    print_to_screen(size_t id, char *msg);
 
-    // pthread_mutex_t *lock;
 
-    // if (pthread_mutex_init(&lock, NULL) != 0)
-    //     return ;
-    if (pthread_mutex_lock(&forkk[(id - 1) % data->n]) == 0)
-        printf(" %d has taken a fork\n", id);
-    if (pthread_mutex_lock(&forkk[(id + 1) % data->n]) == 0)
-        printf(" %d has taken a fork\n", id);
 
-        printf("%d is eating\n", id);
-        usleep(1000 * data->time_to_eat);
+long        current_timestamp(void)
+{
+	struct timeval	watch;
 
-    pthread_mutex_unlock(&forkk[(id - 1) % data->n]);
-    pthread_mutex_unlock(&forkk[(id + 1) % data->n]);
+	gettimeofday(&watch, NULL);
+	return ((watch.tv_sec * 1000) + (watch.tv_usec / 1000));
+}
 
+void    sleeper( t_book *philo)
+{
+    usleep(data->time_to_sleep);
+    print_to_screen(philo->id, "is sleeping");
+}
+
+long    no_time(size_t id) {
+
+    return (wise[id].start - current_timestamp());
+}
+
+
+void    print_to_screen(size_t id, char *msg) {
+
+    pthread_mutex_lock(&print);
+    printf("%ld %ld %s\n", no_time(id), id, msg);
+    pthread_mutex_unlock(&print);
+}
+
+
+void    eat(t_book *philo) {
+
+    size_t id = philo->id;
+
+    pthread_mutex_lock(&wise[id].myfork);
+    print_to_screen(id, "picked up a fork");
+    pthread_mutex_lock(&wise[(id + 1) % data->n].myfork);
+    print_to_screen(id, "picked up a fork");
+
+    usleep(data->time_to_eat);
+    print_to_screen(id, "is eating");
+    pthread_mutex_lock(&inc_meal);
+    wise[id].n_meals++;
+    pthread_mutex_unlock(&inc_meal);
+    wise[id].start = current_timestamp();
+
+    pthread_mutex_unlock(&wise[id].myfork);
+    print_to_screen(id, "released a fork");
+    pthread_mutex_unlock(&wise[(id + 1) % data->n].myfork);
+    print_to_screen(id, "released a fork");
 }
 
 
 
-void    sleepp( int id ) {
-
-    printf("%d is sleeping\n", id);
-    usleep(1000 * data->time_to_sleep);
-}
 void    *routine( void *arg ) 
 {
-//     int *myid = arg;
-//    printf("Thread ID: %d\n", *myid);
+    t_book *philo = (t_book *)arg;
 
-        // eat
-    int *myid = (int *)arg;
-
-
-    forkk = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * (data->n + 1));
-    int i = 0;
-    while (i < data->n) {
-        if (pthread_mutex_init(&forkk[i], NULL) != 0)
-            return arg;
-        i++;
+    usleep(100);
+    while ((philo->n_meals < data->meals) && (philo->flag == 0))
+    {
+        if (no_time(philo->id) > data->time_to_die) {
+            philo->flag = 1;
+            break ;
+        }
+        eat(philo);
+        sleeper(philo);
+        print_to_screen(philo->id, "is thinking");
     }
-    //eat();
-        // 2 forkss
-    eat(*myid);
-    // printf("my id is %d\n", *myid);
-    sleepp(*myid);
-   // think 
-    printf(" philo in routine\n");
-    i = 0;
-    while (i < data->n) {
-        if (pthread_mutex_destroy(&forkk[i]) != 0)
-            return arg;
-        i++;
+    if (philo->flag == 1) {
+        print_to_screen(philo->id, "is dead");
+        philo->flag++;
     }
     return arg;
 }
 
 void    philo_func( char **av )  
 {
-
-
-   
 
     data = (t_philo *)malloc(sizeof(t_philo));
 
@@ -98,34 +103,44 @@ void    philo_func( char **av )
     data->time_to_sleep = atoi(av[3]);
     printf("time to sleep : %zu\n", data->time_to_sleep);
 
-    data->meals = atoi(av[4]);
-    printf("Number of meals: %zu\n", data->meals);
-
+    if (av[4]) {
+        data->meals = atoi(av[4]);
+        printf("Number of meals: %zu\n", data->meals);
+    }
 
     int i;
 
-    int *id;
-
     i = 1;
-    id = &i;
-    philo = (pthread_t *)malloc(sizeof(pthread_t) * (data->n + 1));
+
+    wise = (t_book *)malloc(sizeof(t_book) * (data->n + 1));
+    pthread_mutex_init(&print, NULL);
+    pthread_mutex_init(&inc_meal, NULL);
     while (i <= data->n)
     {
-        //printf("id : %d\n", i);
-        id = &i;
-        if (pthread_create(&philo[i - 1], NULL, routine, (void * )id) != 0){
+        wise[i].n_meals = 0;
+        wise[i].id = i;
+        wise[i].flag = 0;
+        if (pthread_mutex_init(&(wise[i].myfork), NULL) != 0)
+            return ;
+        wise[i].start = current_timestamp();
+        if (pthread_create(&(wise[i].philo), NULL, routine, &wise[i]) != 0)
+        {
             printf("Error philo\n");
-            exit(0);
+            return ;
         }
         i++;
     }
 
-
     i = 1;
     while (i <= data->n) {
-        pthread_join(philo[i - 1], NULL);
+        pthread_join(wise[i].philo, NULL);
+        if (pthread_mutex_destroy(&(wise[i].myfork)) != 0)
+            return ;
         i++;
     }
+    pthread_mutex_destroy(&inc_meal);
+    pthread_mutex_destroy(&print);
+    free(wise);
 }
 
 int     main( int ac, char **av ) {
