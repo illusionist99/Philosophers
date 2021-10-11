@@ -28,7 +28,7 @@ void    sleeper( t_book *philo)
 
 long    no_time(size_t id) {
 
-    return (wise[id].start - current_timestamp());
+    return (current_timestamp() - wise[id].start);
 }
 
 
@@ -36,7 +36,8 @@ void    print_to_screen(size_t id, char *msg) {
 
     pthread_mutex_lock(&print);
     printf("%ld %ld %s\n", no_time(id), id, msg);
-    pthread_mutex_unlock(&print);
+    if (strncmp(msg, "is dead", 7) != 0)
+        pthread_mutex_unlock(&print);
 }
 
 
@@ -44,22 +45,28 @@ void    eat(t_book *philo) {
 
     size_t id = philo->id;
 
-    pthread_mutex_lock(&wise[id].myfork);
+    pthread_mutex_lock(&wise[(id - 1) % data->n].myfork);
     print_to_screen(id, "picked up a fork");
+    
     pthread_mutex_lock(&wise[(id + 1) % data->n].myfork);
     print_to_screen(id, "picked up a fork");
 
-    usleep(data->time_to_eat);
     print_to_screen(id, "is eating");
-    pthread_mutex_lock(&inc_meal);
-    wise[id].n_meals++;
-    pthread_mutex_unlock(&inc_meal);
-    wise[id].start = current_timestamp();
+    usleep(data->time_to_eat);
 
-    pthread_mutex_unlock(&wise[id].myfork);
-    print_to_screen(id, "released a fork");
     pthread_mutex_unlock(&wise[(id + 1) % data->n].myfork);
     print_to_screen(id, "released a fork");
+    
+    pthread_mutex_unlock(&wise[(id - 1) % data->n].myfork);
+    print_to_screen(id, "released a fork");
+
+   // wise[id].start = current_timestamp();
+    
+    
+    pthread_mutex_lock(&inc_meal);
+    if (philo->n_meals < data->meals)
+        wise[id].n_meals++;
+    pthread_mutex_unlock(&inc_meal);
 }
 
 
@@ -68,7 +75,9 @@ void    *routine( void *arg )
 {
     t_book *philo = (t_book *)arg;
 
-    usleep(100);
+   // usleep(1000);
+    wise[philo->id].start = current_timestamp();
+
     while ((philo->n_meals < data->meals) && (philo->flag == 0))
     {
         if (no_time(philo->id) > data->time_to_die) {
@@ -78,11 +87,14 @@ void    *routine( void *arg )
         eat(philo);
         sleeper(philo);
         print_to_screen(philo->id, "is thinking");
+
     }
     if (philo->flag == 1) {
         print_to_screen(philo->id, "is dead");
         philo->flag++;
+        exit(0);
     }
+    
     return arg;
 }
 
@@ -117,13 +129,13 @@ void    philo_func( char **av )
     pthread_mutex_init(&inc_meal, NULL);
     while (i <= data->n)
     {
-        wise[i].n_meals = 0;
-        wise[i].id = i;
-        wise[i].flag = 0;
-        if (pthread_mutex_init(&(wise[i].myfork), NULL) != 0)
+        wise[i - 1].n_meals = 0;
+        wise[i - 1].id = i;
+        wise[i - 1].flag = 0;
+        wise[i - 1].start = current_timestamp();
+        if (pthread_mutex_init(&(wise[i - 1].myfork), NULL) != 0)
             return ;
-        wise[i].start = current_timestamp();
-        if (pthread_create(&(wise[i].philo), NULL, routine, &wise[i]) != 0)
+        if (pthread_create(&(wise[i - 1].philo), NULL, routine, &wise[i - 1]) != 0)
         {
             printf("Error philo\n");
             return ;
@@ -134,12 +146,16 @@ void    philo_func( char **av )
     i = 1;
     while (i <= data->n) {
         pthread_join(wise[i].philo, NULL);
+        i++;
+    }
+    i = 1;
+    while (i <= data->n) {
         if (pthread_mutex_destroy(&(wise[i].myfork)) != 0)
             return ;
         i++;
     }
-    pthread_mutex_destroy(&inc_meal);
     pthread_mutex_destroy(&print);
+    pthread_mutex_destroy(&inc_meal);
     free(wise);
 }
 
