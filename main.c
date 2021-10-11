@@ -41,7 +41,7 @@ void    eat(t_book *philo) {
 
     size_t id = philo->id;
 
-    wise[id].is_eating = false;
+   // wise[id].is_eating = false;
     pthread_mutex_lock(&wise[(id - 1) % data->n].myfork);
     print_to_screen(id, "picked up a fork");
 
@@ -49,16 +49,17 @@ void    eat(t_book *philo) {
     print_to_screen(id, "picked up a fork");
 
     wise[id].is_eating = true;
+    
     print_to_screen(id, "is eating");
     wise[id].start = current_timestamp();
 
-    usleep( 1000 * data->time_to_eat);
-    wise[id].is_eating = false;
+    usleep( data->time_to_eat * 1000 );
 
     pthread_mutex_lock(&inc_meal);
     if (philo->n_meals < data->meals)
         wise[id].n_meals++;
     pthread_mutex_unlock(&inc_meal);
+
 
     
     pthread_mutex_unlock(&wise[(id) % data->n].myfork);
@@ -67,7 +68,7 @@ void    eat(t_book *philo) {
     pthread_mutex_unlock(&wise[(id - 1) % data->n].myfork);
     print_to_screen(id, "released a fork");
 
-
+    wise[id].is_eating = false;
 }
 
 
@@ -82,6 +83,7 @@ void    *routine( void *arg )
         eat(philo);
         sleeper(philo);
         print_to_screen(philo->id, "is thinking");
+        usleep(10);
     }
     return arg;
 }
@@ -91,7 +93,7 @@ int    check_philo(t_book *philo) {
 
     size_t id = philo->id;
 
-    if (no_time(id) >= data->time_to_die)
+    if (no_time(id) >= data->time_to_die )
         return 1;
     return 0;
 }
@@ -153,7 +155,7 @@ void    philo_func( char **av )
 
         while (i < data->n + 1) {
     
-            if ((check_philo(&wise[i - 1]) == 1) && (!wise[i - 1].is_eating))
+            if ((check_philo(&wise[i - 1]) == 1) && !(wise[i - 1].is_eating))
             {
                 f = 1;
                 print_to_screen(i, "is dead");
