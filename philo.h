@@ -8,6 +8,7 @@
 # include <unistd.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <stdbool.h>
 
 typedef struct s_philo {
 
@@ -32,6 +33,7 @@ typedef struct s_book {
    size_t           n_meals;
     int             flag;
    pthread_mutex_t  myfork;
+   bool             is_eating;
 
 }               t_book;
 
