@@ -34,8 +34,11 @@ typedef struct s_book {
    pthread_mutex_t  myfork;
 
 }               t_book;
+
+struct timeval bdyatlkhal9;
+
 t_book *wise;
+int flag = 0;
 pthread_mutex_t  print;
 pthread_mutex_t  inc_meal;
-int flag;
 #endif
