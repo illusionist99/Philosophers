@@ -1,13 +1,5 @@
 # include "philo.h"
 
-// start at 1 
-
-
-
-// eat
-// sleep 
-// think
-
 void    print_to_screen(size_t id, char *msg);
 
 
@@ -22,13 +14,13 @@ long        current_timestamp(void)
 
 void    sleeper( t_book *philo)
 {
-    usleep(data->time_to_sleep);
+    
+    usleep( data->time_to_sleep * 1000 );
     print_to_screen(philo->id, "is sleeping");
 }
 
 long    no_time(size_t id) {
 
-    //usleep(5);
     if (id == -1)
         return (current_timestamp() - ((bdyatlkhal9.tv_sec * 1000) + (bdyatlkhal9.tv_usec / 1000)));
 
@@ -52,15 +44,15 @@ void    eat(t_book *philo) {
     wise[id].is_eating = false;
     pthread_mutex_lock(&wise[(id - 1) % data->n].myfork);
     print_to_screen(id, "picked up a fork");
-    if (data->n == 1)
-        return ;
+
     pthread_mutex_lock(&wise[(id) % data->n].myfork);
     print_to_screen(id, "picked up a fork");
 
     wise[id].is_eating = true;
     print_to_screen(id, "is eating");
     wise[id].start = current_timestamp();
-    usleep(data->time_to_eat);
+
+    usleep( 1000 * data->time_to_eat);
     wise[id].is_eating = false;
 
     pthread_mutex_lock(&inc_meal);
@@ -86,7 +78,6 @@ void    *routine( void *arg )
 
     wise[philo->id].start = current_timestamp();
 
-    //usleep(60);
     while ((philo->n_meals <= data->meals) && (flag == 0))
     {
         eat(philo);
@@ -101,7 +92,7 @@ int    check_philo(t_book *philo) {
 
     size_t id = philo->id;
 
-    if (no_time(id) >= data->time_to_die)
+    if (no_time(id) >= data->time_to_die + 100)
         return 1;
     return 0;
 }
@@ -154,34 +145,26 @@ void    philo_func( char **av )
         i++;
     }
     int f = 0; 
-    int g = 0;
 
     while (!f) {
         
         i = 1;
-        g = 0;
         
 
         while (i < data->n + 1) {
     
-            if (wise[i - 1].n_meals == data->meals)
-                g++;
-
             if (check_philo(&wise[i - 1]) == 1 && !wise[i - 1].is_eating)
             {
                 f = 1;
-                print_to_screen(i - 1, "is dead");
+                print_to_screen(i, "is dead");
                 break ;
             }
             i++;
         }
-        if (g == data->meals  && data->meals != 1) {
-
-            print_to_screen(i - 1, " finished meals");            
+        if (wise[i - 1].n_meals == data->meals  && data->meals != 1)
             break ;
-        }
 
-        usleep(5);
+    
     }
     i = 1;
     while (i < data->n + 1) {
