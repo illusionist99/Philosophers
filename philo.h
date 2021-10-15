@@ -46,4 +46,13 @@ typedef struct s_global {
 
 t_global all;
 
+
+double        current_timestamp(void);
+void    print_to_screen(size_t id, char *msg);
+void    sleeper( t_book *philo);
+double    no_time(size_t id);
+void    eat(t_book *philo);
+int    check_philo(t_book *philo);
+void    *routine( void *arg );
+void    philo_func( char **av );
 #endif
