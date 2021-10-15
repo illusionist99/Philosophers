@@ -27,13 +27,14 @@ typedef struct s_book {
 
    pthread_t        philo;
 
-   size_t           id;
-   long             start;
-   long             last_m;
-   size_t           n_meals;
+    size_t               id;
+    double             start;
+    double             last_m;
+    size_t           n_meals;
     int             flag;
-   pthread_mutex_t  myfork;
-   bool             is_eating;
+    pthread_mutex_t  myfork;
+    bool             is_eating;
+    bool             is_sleeping;
 
 }               t_book;
 
@@ -43,4 +44,6 @@ t_book *wise;
 int flag = 0;
 pthread_mutex_t  print;
 pthread_mutex_t  inc_meal;
+int aa = 0;
+
 #endif
