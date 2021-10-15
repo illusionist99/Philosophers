@@ -19,10 +19,6 @@ typedef struct s_philo {
     size_t meals;
 }               t_philo;
 
-t_philo     *data;
-pthread_t *philo;
-pthread_mutex_t *forkk;
-
 typedef struct s_book {
 
    pthread_t        philo;
@@ -38,12 +34,16 @@ typedef struct s_book {
 
 }               t_book;
 
-struct timeval bdyatlkhal9;
+typedef struct s_global {
 
-t_book *wise;
-int flag = 0;
-pthread_mutex_t  print;
-pthread_mutex_t  inc_meal;
-int aa = 0;
+
+    t_book *wise;
+    struct timeval bdyatlkhal9;
+    pthread_mutex_t  print;
+    pthread_mutex_t  inc_meal;
+    t_philo     *data;
+}               t_global;
+
+t_global all;
 
 #endif
