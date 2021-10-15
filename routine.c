@@ -5,7 +5,7 @@ int    check_philo(t_book *philo) {
 
     size_t id = philo->id;
 
-    if ( no_time(id) >= all.data->time_to_die )
+    if ( no_time(id) >= all.data->time_to_die  && !(all.wise[id].is_eating) )
         return 1;
     return 0;
 }
@@ -15,13 +15,12 @@ void    *routine( void *arg )
 {
 
     t_book *philo = (t_book *)arg;
-    usleep(60);
+
     all.wise[philo->id].start = current_timestamp();
     all.wise[philo->id].is_eating = false;
 
     while (philo->n_meals < all.data->meals)
     {
-
         eat(philo);
     
         sleeper(philo);
@@ -91,7 +90,7 @@ void    supervisor(void) {
         
         while (i < all.data->n + 1) {
     
-            if ((check_philo(&all.wise[i - 1]) == 1) && !(all.wise[i - 1].is_eating))
+            if (check_philo(&all.wise[i - 1]) == 1)
             {
                 f = 1;
                 print_to_screen(i, "is dead");
@@ -134,6 +133,7 @@ void    philo_func( char **av )
             break ;
         }
         usleep(60);
+        pthread_detach((all.wise[i - 1].philo));
         i++;
     }
 

@@ -13,7 +13,7 @@ double        current_timestamp(void)
 void    sleeper( t_book *philo)
 {
 
-    usleep( all.data->time_to_sleep );
+    usleep( all.data->time_to_sleep * 1000 );
     print_to_screen(philo->id, "is sleeping");
 
 }
@@ -38,28 +38,29 @@ void    eat(t_book *philo) {
 
     size_t id = philo->id;
 
+    pthread_mutex_lock(&all.wise[(id) % all.data->n].myfork);
+    print_to_screen(id, "picked up a fork");
 
     pthread_mutex_lock(&all.wise[(id + 1) % all.data->n].myfork);
     print_to_screen(id, "picked up a fork");
 
-    pthread_mutex_lock(&all.wise[(id) % all.data->n].myfork);
-    print_to_screen(id, "picked up a fork");
+
 
     all.wise[id].is_eating = true;
     
     print_to_screen(id, "is eating");
-    all.wise[id].start = current_timestamp();
 
-    usleep( all.data->time_to_eat );
+    usleep( all.data->time_to_eat  * 1000);
 
     pthread_mutex_lock(&all.inc_meal);
     all.wise[id].n_meals++;
     pthread_mutex_unlock(&all.inc_meal);
+    all.wise[id].start = current_timestamp();
 
-    pthread_mutex_unlock(&all.wise[(id) % all.data->n].myfork);
+    pthread_mutex_unlock(&all.wise[(id + 1) % all.data->n].myfork);
     print_to_screen(id, "released a fork");
     
-    pthread_mutex_unlock(&all.wise[(id + 1) % all.data->n].myfork);
+    pthread_mutex_unlock(&all.wise[(id) % all.data->n].myfork);
     print_to_screen(id, "released a fork");
     all.wise[id].is_eating = false;
 }
