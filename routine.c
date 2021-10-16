@@ -129,6 +129,7 @@ void    philo_func( char **av )
             break ;
         }
         usleep(60);
+        pthread_detach((all.wise[i - 1].philo));
         i++;
     }
 
