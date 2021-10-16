@@ -33,6 +33,8 @@ void    *routine( void *arg )
 
 void    init_data( char **av) {
 
+    int i;
+
     all.data = (t_philo *)malloc(sizeof(t_philo));
 
     all.data->n = atoi(av[0]);
@@ -58,38 +60,32 @@ void    init_data( char **av) {
     pthread_mutex_init(&all.print, NULL);
     pthread_mutex_init(&all.inc_meal, NULL);
     gettimeofday(&all.bdyatlkhal9, NULL);
-    int i;
-
     i = 1;
-
     while (i < all.data->n + 1)
     {
-
         all.wise[i - 1].n_meals = 0;
         all.wise[i - 1].id = i;
         all.wise[i - 1].flag = 0;
         all.wise[i - 1].start = current_timestamp();
         all.wise[i - 1].is_eating = false;
-
         if (pthread_mutex_init(&(all.wise[i - 1].myfork), NULL) != 0)
             break ;
         i++;
     }
 }
 
-void    supervisor(void) {
-
+void    supervisor(void)
+{
     int i;
+    int f;
 
     i = 1;
-    int f = 0; 
-
-    while (!f) {
-
+    f = 0; 
+    while (!f)
+    {
         i = 1;
-        
-        while (i < all.data->n + 1) {
-    
+        while (i < all.data->n + 1)
+        {
             if (check_philo(&all.wise[i - 1]) == 1)
             {
                 f = 1;
