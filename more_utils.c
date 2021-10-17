@@ -12,12 +12,42 @@
 
 #include "philo.h"
 
-int     main(int ac, char **av)
+double  current_timestamp(void)
 {
-    all.ac = ac;
-    if ((ac  == 6) || (ac == 5))
-        philo_func(++av);
-    else
-        printf("Error\n");
-    return (0);
+    struct timeval  watch;
+
+	gettimeofday(&watch, NULL);
+	return ((watch.tv_sec * 1000 ) + (watch.tv_usec / 1000));
+}
+
+void    usleeper2(double time)
+{
+    double  now;
+
+    now = current_timestamp();
+    usleep(time * 1000 * 0.85);
+    while(current_timestamp() < now + time)
+        continue;
+}
+
+void    sleeper( t_book *philo)
+{
+    print_to_screen(philo->id, "is sleeping");
+    usleeper2(all.data->time_to_sleep);
+}
+
+double  no_time(int id)
+{
+    if (id == -1)
+        return (current_timestamp() -
+            ((all.startp.tv_sec  * 1000) + (all.startp.tv_usec / 1000)));
+    return (current_timestamp() - all.wise[id].start);
+}
+
+void    print_to_screen(size_t id, char *msg)
+{
+    pthread_mutex_lock(&all.print);
+    printf("%d %ld %s\n", (int)no_time(-1), id, msg);
+    if (strncmp(msg, "is dead", (long unsigned int)7) != 0)
+        pthread_mutex_unlock(&all.print);
 }

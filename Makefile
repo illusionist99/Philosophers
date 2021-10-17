@@ -3,13 +3,14 @@ NAME = philo
 
 SRC = main.c \
 	  routine.c \
-	  utils.c
+	  utils.c \
+	  more_utils.c
 
 
 all: $(NAME)
 
 $(NAME):
-	gcc $(SRC) -pthread  -o $(NAME)
+	gcc $(SRC) -pthread -Wall -Werror -Wextra  -o $(NAME)
 
 
 clean:
