@@ -37,10 +37,11 @@ typedef struct      s_book {
 typedef struct      s_global {
 
     t_book          *wise;
-    struct timeval  bdyatlkhal9;
+    struct timeval  startp;
     pthread_mutex_t print;
     pthread_mutex_t inc_meal;
     t_philo         *data;
+    int             ac;
 
 }               t_global;
 

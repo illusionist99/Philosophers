@@ -2,6 +2,7 @@
 
 int     main( int ac, char **av )
 {
+    all.ac = ac;
     if ( ac  == 6 || ac == 5 )
         philo_func(++av);
     else

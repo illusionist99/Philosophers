@@ -5,7 +5,7 @@ int    check_philo(t_book *philo) {
 
     size_t id = philo->id;
 
-    if ( no_time(id) > all.data->time_to_die  && !(all.wise[id].is_eating) )
+    if ( no_time(id) > all.data->time_to_die )
         return 1;
 
     return 0;
@@ -16,8 +16,9 @@ void    *routine( void *arg )
 {
 
     t_book *philo = (t_book *)arg;
-
-    while (true) 
+    if (all.ac == 5)
+        all.wise[philo->id].n_meals = 1;
+    while ( true )
     {    
         
         all.wise[philo->id].is_eating = false;
@@ -27,10 +28,7 @@ void    *routine( void *arg )
     
         sleeper(philo);
     
-        //pthread_mutex_lock(&all.print);
         print_to_screen(philo->id, "is thinking");
-        //pthread_mutex_unlock(&all.print);
-
     }
     return arg;
 }
@@ -39,42 +37,46 @@ void    init_data( char **av) {
 
     int i;
 
+
     all.data = (t_philo *)malloc(sizeof(t_philo));
 
     all.data->n = atoi(av[0]);
-    // printf("Number of phiilosophers: %zu\n", all.data->n);
-
     all.data->time_to_die = atoi(av[1]);
-    // printf("time to die : %zu\n", all.data->time_to_die);
-
     all.data->time_to_eat = atoi(av[2]);
-    // printf("time to eat: %zu\n", all.data->time_to_eat);
-
     all.data->time_to_sleep = atoi(av[3]);
-    // printf("time to sleep : %zu\n", all.data->time_to_sleep);
-
-    if (av[4]) {
+    if (av[4])
         all.data->meals = atoi(av[4]);
-        // printf("Number of meals: %zu\n", all.data->meals);
-    }
     else
         all.data->meals = 1;
     all.wise = (t_book *)malloc(sizeof(t_book) * (all.data->n + 1));
     pthread_mutex_init(&all.print, NULL);
     pthread_mutex_init(&all.inc_meal, NULL);
-    gettimeofday(&all.bdyatlkhal9, NULL);
+    gettimeofday(&all.startp, NULL);
     i = 1;
     while (i < all.data->n + 1)
     {
-        all.wise[i - 1].n_meals = 0;
+        all.wise[i - 1].n_meals = 1;
         all.wise[i - 1].id = i;
         all.wise[i - 1].flag = 0;
-        
         all.wise[i - 1].is_eating = false;
         if (pthread_mutex_init(&(all.wise[i - 1].myfork), NULL) != 0)
             break ;
         i++;
     }
+}
+
+int     all_meals( void )
+{
+    int i;
+
+    i = 0;
+    while (i < all.data->n )
+    {
+        if (all.wise[i].n_meals > all.data->meals + 1)
+            return (1);
+        i++;
+    }
+    return (0);
 }
 
 void    supervisor( void )
@@ -87,18 +89,24 @@ void    supervisor( void )
     while (!f)
     {
         i = 1;
+        if ((all.ac == 6) && (all_meals() == 1))
+        {
+            f = 1;            
+            print_to_screen(i, "is fat");
+            break ;
+        }
         while (i < all.data->n + 1)
         {
-            if (check_philo(&all.wise[i - 1]) == 1)
+            if (check_philo(&all.wise[i - 1]) == 1  && !(all.wise[i - 1].is_eating))
             {
                 f = 1;
                 print_to_screen(i, "is dead");
                 break ;
             }
-            if ((all.wise[i - 1].n_meals == all.data->meals)  && (all.data->meals != 1))
-                break ;
+
             i++;
         }
+
     }
 }
 
@@ -132,9 +140,9 @@ void    philo_func( char **av )
         {
             printf("Error philo\n");
             break ;
-        }
-        usleep(100);
-       // pthread_detach((all.wise[i - 1].philo));
+        } 
+        pthread_detach((all.wise[i - 1].philo));
+        usleep(10);
         i++;
     }
 
