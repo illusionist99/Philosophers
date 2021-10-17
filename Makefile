@@ -12,7 +12,6 @@ all: $(NAME)
 $(NAME):
 	gcc $(SRC) -pthread -Wall -Werror -Wextra  -o $(NAME)
 
-
 clean:
 	rm -rf $(NAME)
 
