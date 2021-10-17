@@ -27,9 +27,9 @@ void    *routine( void *arg )
     
         sleeper(philo);
     
-        pthread_mutex_lock(&all.print);
+        //pthread_mutex_lock(&all.print);
         print_to_screen(philo->id, "is thinking");
-        pthread_mutex_unlock(&all.print);
+        //pthread_mutex_unlock(&all.print);
 
     }
     return arg;
@@ -133,7 +133,7 @@ void    philo_func( char **av )
             printf("Error philo\n");
             break ;
         }
-        usleep(60);
+        usleep(100);
        // pthread_detach((all.wise[i - 1].philo));
         i++;
     }

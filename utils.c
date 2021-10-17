@@ -15,7 +15,7 @@ void          usleeper2(double time)
 
     now = current_timestamp();
     usleep(time * 1000 * 0.85);
-    while(current_timestamp() <= now + time)
+    while(current_timestamp() < now + time)
         continue;
 }
 void    sleeper( t_book *philo)
@@ -37,10 +37,10 @@ double    no_time(size_t id)
 
 void    print_to_screen(size_t id, char *msg) {
 
-    //pthread_mutex_lock(&all.print);
+    pthread_mutex_lock(&all.print);
     printf("%d %ld %s\n", (int)no_time(-1), id, msg);
 //     if (strncmp(msg, "is dead", (long unsigned int)7) != 0)
-//         pthread_mutex_unlock(&all.print);
+    pthread_mutex_unlock(&all.print);
 // }
 }
 
@@ -61,6 +61,7 @@ void    eat(t_book *philo)
     all.wise[id].is_eating = true;
     
     print_to_screen(id, "is eating");
+    
     all.wise[id].start = current_timestamp();
     //usleep( (all.data->time_to_eat ) * 1000);
     usleeper2(all.data->time_to_eat);
