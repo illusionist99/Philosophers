@@ -18,11 +18,12 @@ void    *routine( void *arg )
     t_book *philo = (t_book *)arg;
     if (all.ac == 5)
         all.wise[philo->id].n_meals = 1;
+    all.wise[philo->id].start = current_timestamp();
+
     while ( true )
     {    
         
         all.wise[philo->id].is_eating = false;
-        all.wise[philo->id].start = current_timestamp();
         
         eat(philo);
     
@@ -91,8 +92,7 @@ void    supervisor( void )
         i = 1;
         if ((all.ac == 6) && (all_meals() == 1))
         {
-            f = 1;            
-            print_to_screen(i, "is fat");
+            f = 1;
             break ;
         }
         while (i < all.data->n + 1)
@@ -106,7 +106,7 @@ void    supervisor( void )
 
             i++;
         }
-
+        usleep(5);
     }
 }
 
@@ -134,6 +134,10 @@ void    philo_func( char **av )
     init_data(av);
 
     i = 1;
+    if ((all.data->n == 0) || (all.data->meals == 0)) {
+        printf("Error\n");
+        return ;
+    }
     while (i < all.data->n + 1)
     {
         if (pthread_create(&(all.wise[i - 1].philo), NULL, routine, &all.wise[i - 1]) != 0)
@@ -142,7 +146,7 @@ void    philo_func( char **av )
             break ;
         } 
         pthread_detach((all.wise[i - 1].philo));
-        usleep(10);
+        usleep(60);
         i++;
     }
 

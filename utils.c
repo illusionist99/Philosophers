@@ -37,8 +37,7 @@ void    print_to_screen(size_t id, char *msg) {
 
     pthread_mutex_lock(&all.print);
     printf("%d %ld %s\n", (int)no_time(-1), id, msg);
-    if ((strncmp(msg, "is dead", (long unsigned int)7) != 0) &&
-        (strncmp(msg, "is fat", (long unsigned int)6) != 0))
+    if (strncmp(msg, "is dead", (long unsigned int)7) != 0)
         pthread_mutex_unlock(&all.print);
 
 }
@@ -67,5 +66,6 @@ void    eat(t_book *philo)
     pthread_mutex_unlock(&all.wise[(id) % all.data->n].myfork);
     pthread_mutex_unlock(&all.wise[(id + 1) % all.data->n].myfork);
     all.wise[id].is_eating = false;
+
 }
 
