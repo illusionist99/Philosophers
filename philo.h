@@ -41,6 +41,7 @@ typedef struct      s_global {
     pthread_mutex_t print;
     pthread_mutex_t inc_meal;
     t_philo         *data;
+
 }               t_global;
 
 t_global    all;

@@ -9,7 +9,7 @@ SRC = main.c \
 all: $(NAME)
 
 $(NAME):
-	gcc $(SRC) -pthread -fsanitize=address -o $(NAME)
+	gcc $(SRC) -pthread  -o $(NAME)
 
 
 clean:
