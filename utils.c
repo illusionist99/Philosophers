@@ -17,9 +17,9 @@ int	all_meals(void)
 	size_t	i;
 
 	i = 0;
-	while (i < all.data->n)
+	while (i < g_all.data->n)
 	{
-		if (all.wise[i].n_meals > all.data->meals + 1)
+		if (g_all.wise[i].n_meals > g_all.data->meals + 1)
 			return (1);
 		i++;
 	}
@@ -36,15 +36,15 @@ void	supervisor(void)
 	while (!f)
 	{
 		i = 0;
-		if ((all.ac == 6) && (all_meals() == 1))
+		if ((g_all.ac == 6) && (all_meals() == 1))
 		{
 			f = 1;
 			break ;
 		}
-		while (++i < all.data->n + 1)
+		while (++i < g_all.data->n + 1)
 		{
-			if ((check_philo(&all.wise[i - 1]) == 1)
-				&& !(all.wise[i - 1].is_eating))
+			if ((check_philo(&g_all.wise[i - 1]) == 1)
+				&& !(g_all.wise[i - 1].is_eating))
 			{
 				f = 1;
 				print_to_screen(i, "is dead");
@@ -60,15 +60,15 @@ void	clean(void)
 	size_t	i;
 
 	i = 1;
-	while (i < all.data->n + 1)
+	while (i < g_all.data->n + 1)
 	{
-		if (pthread_mutex_destroy(&(all.wise[i - 1].myfork)) != 0)
+		if (pthread_mutex_destroy(&(g_all.wise[i - 1].myfork)) != 0)
 			return ;
 		i++;
 	}
-	pthread_mutex_destroy(&all.print);
-	pthread_mutex_destroy(&all.inc_meal);
-	free(all.wise);
+	pthread_mutex_destroy(&g_all.print);
+	pthread_mutex_destroy(&g_all.inc_meal);
+	free(g_all.wise);
 }
 
 void	eat(t_book *philo)
@@ -76,21 +76,21 @@ void	eat(t_book *philo)
 	size_t	id;
 
 	id = philo->id;
-	pthread_mutex_lock(&all.wise[(id) % all.data->n].myfork);
+	pthread_mutex_lock(&g_all.wise[(id) % g_all.data->n].myfork);
 	print_to_screen(id, "picked up a fork");
-	pthread_mutex_lock(&all.wise[(id + 1) % all.data->n].myfork);
+	pthread_mutex_lock(&g_all.wise[(id + 1) % g_all.data->n].myfork);
 	print_to_screen(id, "picked up a fork");
-	all.wise[id].is_eating = true;
+	g_all.wise[id].is_eating = true;
 	print_to_screen(id, "is eating");
-	all.wise[id].start = current_timestamp();
-	usleeper2(all.data->time_to_eat);
-	if (all.ac == 6)
+	g_all.wise[id].start = current_timestamp();
+	usleeper2(g_all.data->time_to_eat);
+	if (g_all.ac == 6)
 	{
-		pthread_mutex_lock(&all.inc_meal);
-		(all.wise[id].n_meals)++;
-		pthread_mutex_unlock(&all.inc_meal);
+		pthread_mutex_lock(&g_all.inc_meal);
+		(g_all.wise[id].n_meals)++;
+		pthread_mutex_unlock(&g_all.inc_meal);
 	}
-	pthread_mutex_unlock(&all.wise[(id) % all.data->n].myfork);
-	pthread_mutex_unlock(&all.wise[(id + 1) % all.data->n].myfork);
-	all.wise[id].is_eating = false;
+	pthread_mutex_unlock(&g_all.wise[(id) % g_all.data->n].myfork);
+	pthread_mutex_unlock(&g_all.wise[(id + 1) % g_all.data->n].myfork);
+	g_all.wise[id].is_eating = false;
 }

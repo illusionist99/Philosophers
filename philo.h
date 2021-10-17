@@ -10,16 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __PHILO__H__
-# define __PHILO__H__
+#ifndef	__PHILO__H__
+# define	__PHILO__H__
 
-#include <strings.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/time.h>
-#include <stdbool.h>
+#include	<strings.h>
+#include	<stdlib.h>
+#include	<stdio.h>
+#include	<unistd.h>
+#include	<pthread.h>
+#include	<sys/time.h>
+#include	<stdbool.h>
 
 typedef	struct	s_philo
 {
@@ -53,7 +53,7 @@ typedef struct	s_global
 	int		ac;
 }			t_global;
 
-t_global	all;
+t_global	g_all;
 
 double		current_timestamp(void);
 void		print_to_screen(size_t id, char *msg);

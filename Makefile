@@ -7,7 +7,7 @@ SRC = main.c \
 	  more_utils.c
 
 
-all: $(NAME)
+g_all: $(NAME)
 
 $(NAME):
 	gcc $(SRC) -pthread -Wall -Werror -Wextra  -o $(NAME)
@@ -17,6 +17,6 @@ clean:
 
 fclean: clean
 
-re: fclean all
+re: fclean g_all
 
-.PHONY: fclean all re clean
+.PHONY: fclean g_all re clean
