@@ -20,6 +20,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <stdbool.h>
+# include <limits.h>
 
 typedef struct s_philo
 {
@@ -72,5 +73,6 @@ int			check_args(char **av);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 int			ft_strlen(const char *s);
 void		init_data(char **av);
+int			check_values(void);
 
 #endif

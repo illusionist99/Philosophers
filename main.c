@@ -32,14 +32,15 @@ void	philo_func(char **av)
 {
 	size_t	i;
 
-	i = 1;
+	i = 0;
 	init_data(av);
-	if ((g_all.data->n == 0) || (g_all.data->meals == 0))
+	if ((g_all.data->n == 0)
+		|| (g_all.data->meals == 0) || check_values())
 	{
 		printf("Error\n");
 		return ;
 	}
-	while (i < g_all.data->n + 1)
+	while (++i < g_all.data->n + 1)
 	{
 		if (pthread_create(&(g_all.wise[i - 1].philo),
 				NULL, routine, &g_all.wise[i - 1]) != 0)
@@ -49,7 +50,6 @@ void	philo_func(char **av)
 		}
 		pthread_detach((g_all.wise[i - 1].philo));
 		usleep(60);
-		i++;
 	}
 	supervisor();
 	clean();

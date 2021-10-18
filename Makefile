@@ -4,7 +4,8 @@ SRC = main.c \
 	  routine.c \
 	  utils.c \
 	  more_utils.c \
-	  ft_ft.c
+	  ft_ft.c\
+	  ft_error.c
 
 all: $(NAME)
 
