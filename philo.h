@@ -66,5 +66,11 @@ void		philo_func(char **av);
 void		supervisor(void);
 void		clean(void);
 void		usleeper2(double time);
+int			ft_atoi(const char *str);
+int			ft_isdigit(char c);
+int			check_args(char **av);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
+int			ft_strlen(const char *s);
+void		init_data(char **av);
 
 #endif

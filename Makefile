@@ -3,10 +3,10 @@ NAME = philo
 SRC = main.c \
 	  routine.c \
 	  utils.c \
-	  more_utils.c
+	  more_utils.c \
+	  ft_ft.c
 
-
-g_all: $(NAME)
+all: $(NAME)
 
 $(NAME):
 	gcc $(SRC) -pthread -Wall -Werror -Wextra  -o $(NAME)
@@ -16,6 +16,6 @@ clean:
 
 fclean: clean
 
-re: fclean g_all
+re: fclean all
 
-.PHONY: fclean g_all re clean
+.PHONY: fclean all re clean

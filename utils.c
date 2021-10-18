@@ -12,6 +12,42 @@
 
 #include "philo.h"
 
+char	*ft_strdup(const char *s1)
+{
+	size_t	i;
+	size_t	len;
+	char	*p;
+
+	i = 0;
+	len = ft_strlen(s1);
+	p = (char *)malloc(sizeof(char) * (len + 1));
+	while (i < len)
+	{
+		p[i] = s1[i];
+		i++;
+	}
+	p[i] = '\0';
+	return (p);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	unsigned char	*p1;
+	unsigned char	*p2;
+
+	i = 0;
+	if (s1 == NULL)
+		s1 = ft_strdup("");
+	p1 = (unsigned char *)s1;
+	p2 = (unsigned char *)s2;
+	if (n == 0)
+		return (0);
+	while (p1[i] != '\0' && p2[i] != '\0' && p1[i] == p2[i] && i < n - 1)
+		i++;
+	return (p1[i] - p2[i]);
+}
+
 int	all_meals(void)
 {
 	size_t	i;
@@ -53,22 +89,6 @@ void	supervisor(void)
 		}
 		usleep(5);
 	}
-}
-
-void	clean(void)
-{
-	size_t	i;
-
-	i = 1;
-	while (i < g_all.data->n + 1)
-	{
-		if (pthread_mutex_destroy(&(g_all.wise[i - 1].myfork)) != 0)
-			return ;
-		i++;
-	}
-	pthread_mutex_destroy(&g_all.print);
-	pthread_mutex_destroy(&g_all.inc_meal);
-	free(g_all.wise);
 }
 
 void	eat(t_book *philo)
