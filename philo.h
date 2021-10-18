@@ -10,18 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef	__PHILO__H__
-# define	__PHILO__H__
+#ifndef PHILO_H
+# define PHILO_H
 
-#include	<strings.h>
-#include	<stdlib.h>
-#include	<stdio.h>
-#include	<unistd.h>
-#include	<pthread.h>
-#include	<sys/time.h>
-#include	<stdbool.h>
+# include <strings.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <pthread.h>
+# include <sys/time.h>
+# include <stdbool.h>
 
-typedef	struct	s_philo
+typedef struct s_philo
 {
 	size_t	n;
 	size_t	time_to_die;
@@ -30,27 +30,27 @@ typedef	struct	s_philo
 	size_t	meals;
 }	t_philo;
 
-typedef	struct	s_book
+typedef struct s_book
 {
-	pthread_t	philo;
-	size_t	id;
-	double	start;
-	double	last_m;
-	size_t	n_meals;
-	int	flag;
-	pthread_mutex_t	myfork;
-	bool	is_eating;
-	bool	is_sleeping;
+	pthread_t			philo;
+	size_t				id;
+	double				start;
+	double				last_m;
+	size_t				n_meals;
+	int					flag;
+	pthread_mutex_t		myfork;
+	bool				is_eating;
+	bool				is_sleeping;
 }	t_book;
 
-typedef struct	s_global
+typedef struct s_global
 {
-	t_book	*wise;
+	t_book			*wise;
 	struct timeval	startp;
 	pthread_mutex_t	print;
 	pthread_mutex_t	inc_meal;
-	t_philo	*data;
-	int		ac;
+	t_philo			*data;
+	int				ac;
 }			t_global;
 
 t_global	g_all;

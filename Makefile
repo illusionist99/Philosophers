@@ -1,6 +1,5 @@
 NAME = philo
 
-
 SRC = main.c \
 	  routine.c \
 	  utils.c \
